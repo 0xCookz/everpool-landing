@@ -1,4 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Everpool &mdash; launch a pool that grows itself &middot; pools.trade</title>
+<meta name="description" content="Everpool is a token launchpad on pools.trade where every trading fee is folded back into the token's own pool, automatically, every ten minutes, for good.">
+<meta name="theme-color" content="#0d0206">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Everpool - a pool that grows itself">
+<meta property="og:description" content="Launch a token whose trading fees become locked liquidity, every ten minutes, forever. On pools.trade.">
+<meta name="twitter:card" content="summary">
+</head>
+<body>
 
 <!-- ============================================================================
      EVERPOOL &middot; landing  (working name &mdash; swap BRAND.name / BRAND.ticker below)
@@ -27,6 +40,7 @@
   --faint:#8a636e;           /* tertiary */
   --brand:#e8005a;           /* pink sampled from the moving background */
   --brand-press:#ff2d78;
+  --brand-hi:#ff4f86;        /* lighter pink for small text (AA on near-black) */
   --pool:#e8005a;            /* pink sampled from the moving background */
   --pool-ink:#ffffff;
   --line:rgba(232,0,90,.20);
@@ -63,7 +77,7 @@ img,svg{max-width:100%}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .eyebrow{
   font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--brand);margin:0 0 20px;display:inline-flex;align-items:center;gap:9px;
+  color:var(--brand-hi);margin:0 0 20px;display:inline-flex;align-items:center;gap:9px;
 }
 .eyebrow::before{content:"";width:20px;height:1px;background:currentColor;opacity:.6}
 .eyebrow.mute{color:var(--muted)}
@@ -88,22 +102,22 @@ header.nav::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:-.03em}
 .brand svg{display:block}
-.brand .tk{font-family:var(--f-mono);font-size:11px;font-weight:400;color:var(--brand);letter-spacing:.02em;
+.brand .tk{font-family:var(--f-mono);font-size:11px;font-weight:400;color:var(--brand-hi);letter-spacing:.02em;
   border:1px solid var(--line);padding:2px 7px;border-radius:6px}
-.nav-left{display:flex;align-items:center;gap:24px;min-width:0}
-.nav-links{display:flex;gap:22px;font-size:14px;color:rgba(255,255,255,.78)}
+.nav-links{display:flex;gap:22px;font-size:14px;color:rgba(255,255,255,.78);margin-left:4px}
 .nav-links a{transition:color .2s var(--ease);white-space:nowrap}
 .nav-links a:hover{color:#fff}
-.nav-right{display:flex;align-items:center;gap:12px}
-@media (max-width:620px){.nav-links{gap:13px;font-size:12.5px}.brand .tk{display:none}}
-@media (max-width:420px){.brand-name-hide{display:none}}
+header.nav > .btn-primary{margin-left:auto}
+/* mobile: two-row bar (logo + Launch, then links) — no dropdown */
+@media (max-width:640px){
+  header.nav{flex-wrap:wrap;border-radius:22px;padding:10px 14px;row-gap:11px;gap:10px}
+  .brand{order:1}
+  header.nav > .btn-primary{order:2}
+  .nav-links{order:3;width:100%;justify-content:center;gap:20px;font-size:13px;margin-left:0}
+}
+@media (max-width:400px){.brand .tk{display:none}}
 
-.tgl{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
-  background:transparent;border:1px solid var(--line);color:var(--ink);transition:.2s var(--ease)}
-.tgl:hover{border-color:var(--brand);color:var(--brand)}
-.tgl .moon{display:none}
-:root[data-theme="dark"] .tgl .sun{display:none}
-:root[data-theme="dark"] .tgl .moon{display:block}
+/* theme toggle removed — night mode only */
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:var(--f-body);
   font-size:14.5px;font-weight:600;padding:11px 20px;border-radius:999px;border:1px solid transparent;white-space:nowrap;
@@ -145,13 +159,13 @@ h1{font-size:clamp(2.6rem,7.6vw,5.5rem);font-weight:800}
 h1 .ln{display:block;overflow:hidden}
 h1 .ln > span{display:block;transform:translateY(102%);transition:transform .9s var(--ease)}
 h1.in .ln > span{transform:none}
-h1 .accent{color:var(--brand);font-style:italic}
+h1 .accent{color:var(--brand-hi);font-style:italic}
 .lede{font-size:clamp(1.06rem,2.2vw,1.32rem);color:var(--muted);max-width:610px;margin:26px auto 32px;line-height:1.55}
 .lede b{color:var(--ink);font-weight:600}
 .hero-cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
 .hero-chip{margin-top:28px;display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:13px;
   color:var(--muted);padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--paper) 60%,transparent)}
-.hero-chip b{color:var(--brand);font-weight:400}
+.hero-chip b{color:var(--brand-hi);font-weight:400}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 9px var(--brand);animation:pulse 2.4s var(--ease) infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
 
@@ -175,7 +189,7 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
 .dial__c .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
 .dial__c .t{font-family:var(--f-mono);font-size:clamp(2.3rem,6.5vw,3.2rem);font-weight:700;letter-spacing:-.02em;line-height:1;color:var(--ink)}
 .dial__c .s{font-size:12px;color:var(--faint)}
-.dial.flash .dial__c .t{color:var(--brand)}
+.dial.flash .dial__c .t{color:var(--brand-hi)}
 
 .pstages{display:flex;flex-direction:column;gap:2px}
 .pstage{display:flex;align-items:center;gap:15px;padding:14px 17px;border-radius:14px;border:1px solid transparent;
@@ -189,7 +203,7 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
 .poolsize{margin-top:26px}
 .poolsize__top{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-mono);font-size:11.5px;
   text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:9px}
-.poolsize__top b{color:var(--brand);font-size:15px;letter-spacing:0}
+.poolsize__top b{color:var(--brand-hi);font-size:15px;letter-spacing:0}
 .poolsize__track{height:9px;border-radius:6px;background:var(--paper-2);overflow:hidden;border:1px solid var(--line-soft)}
 .poolsize__fill{height:100%;width:58%;border-radius:6px;background:linear-gradient(90deg,var(--brand),var(--pool));
   box-shadow:0 0 10px rgba(var(--ripple),.4);transition:width .8s var(--ease)}
@@ -201,8 +215,8 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
 .step{position:relative;padding:28px 26px 30px;border-radius:18px;background:var(--card);border:1px solid var(--line-soft);
   overflow:hidden;transition:border-color .3s var(--ease),transform .3s var(--ease)}
 .step:hover{border-color:var(--line);transform:translateY(-3px)}
-.step__n{font-family:var(--f-mono);font-size:12px;color:var(--brand);letter-spacing:.06em}
-.step__i{margin:16px 0 14px;color:var(--brand)}
+.step__n{font-family:var(--f-mono);font-size:12px;color:var(--brand-hi);letter-spacing:.06em}
+.step__i{margin:16px 0 14px;color:var(--brand-hi)}
 .step h3{font-size:1.24rem;font-weight:700;margin-bottom:9px;font-family:var(--f-display)}
 .step p{color:var(--muted);font-size:14.5px;margin:0}
 .step::after{content:"";position:absolute;left:0;top:0;height:2px;width:100%;transform:scaleX(0);transform-origin:left;
@@ -218,7 +232,7 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
 .vcard h3{font-size:1.18rem;margin-bottom:6px}
 .vcard .tl{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px}
 .vcard.bad .tl{color:var(--faint)}
-.vcard.good .tl{color:var(--brand)}
+.vcard.good .tl{color:var(--brand-hi)}
 .vlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
 .vlist li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--muted)}
 .vcard.good .vlist li{color:var(--ink)}
@@ -230,16 +244,16 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
 .stat{background:var(--bg);padding:32px 26px}
 .band.tint .stat{background:var(--paper)}
 .stat .v{font-family:var(--f-mono);font-size:clamp(1.7rem,4vw,2.35rem);font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1}
-.stat .v .u{color:var(--brand)}
+.stat .v .u{color:var(--brand-hi)}
 .stat .l{font-size:12.5px;color:var(--muted);margin-top:12px}
 
 /* ---------- final -------------------------------------------------------- */
 .final{text-align:center}
 .final h2{font-size:clamp(2.2rem,6vw,4rem);margin-bottom:20px}
-.final .accent{color:var(--brand);font-style:italic}
+.final .accent{color:var(--brand-hi);font-style:italic}
 .socials{display:flex;gap:12px;justify-content:center;margin-top:26px}
 .socials a{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted);transition:.2s var(--ease)}
-.socials a:hover{color:var(--brand);border-color:var(--brand);transform:translateY(-2px)}
+.socials a:hover{color:var(--brand-hi);border-color:var(--brand-hi);transform:translateY(-2px)}
 
 /* ---------- footer ------------------------------------------------------- */
 footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--faint);font-size:13px}
@@ -247,22 +261,7 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
 .disclaimer{max-width:560px;line-height:1.6;font-size:12px}
 .disclaimer b{color:var(--muted)}
 
-/* ---------- nav dropdown menu (mobile only; desktop uses inline links) --- */
-.menu{position:relative}
-@media (min-width:821px){.menu{display:none}}
-.menu__panel{position:absolute;right:0;top:calc(100% + 10px);min-width:214px;background:var(--card);
-  border:1px solid var(--line);border-radius:16px;padding:7px;box-shadow:0 20px 46px rgba(22,4,16,.18);
-  display:flex;flex-direction:column;gap:1px;z-index:60;
-  opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top right;pointer-events:none;
-  transition:opacity .18s var(--ease),transform .18s var(--ease)}
-:root[data-theme="dark"] .menu__panel{box-shadow:0 20px 46px rgba(0,0,0,.5)}
-.menu[data-open="true"] .menu__panel{opacity:1;transform:none;pointer-events:auto}
-.menu__panel a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;font-size:14.5px;
-  color:var(--ink);transition:background .16s,color .16s}
-.menu__panel a:hover{background:var(--paper);color:var(--brand)}
-.menu__panel a svg{opacity:.65;flex:0 0 auto}
-.menu__sep{height:1px;background:var(--line-soft);margin:5px 6px}
-.menu__k{font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:8px 12px 5px}
+/* dropdown menu removed — nav links are inline & fixed */
 
 /* ---------- gradient showcase -------------------------------------------- */
 .showcase-band{padding-block:clamp(28px,5vh,60px)}
@@ -281,7 +280,7 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
 .showcase__inner .btn:hover{background:#ffd9ef;box-shadow:0 0 40px rgba(255,45,155,.5)}
 
 /* ---------- reveal ------------------------------------------------------- */
-.reveal{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
 .reveal.in{opacity:1;transform:none}
 .reveal[data-d="1"]{transition-delay:.07s}.reveal[data-d="2"]{transition-delay:.14s}.reveal[data-d="3"]{transition-delay:.2s}
 @media (prefers-reduced-motion:reduce){
@@ -294,21 +293,23 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
 <div class="rail" aria-hidden="true"><div class="rail__fill" id="railFill"></div><div class="rail__label">pool depth</div></div>
 
 <header class="nav">
-  <div class="nav-left">
-    <a class="brand" href="#top" aria-label="Everpool home">
-      <svg width="20" height="24" viewBox="0 0 20 24" fill="none" aria-hidden="true">
-        <path d="M10 1S1 11 1 17a9 9 0 0018 0C19 11 10 1 10 1Z" style="fill:var(--brand)"/>
-        <path d="M6.4 16.6a3.6 3.6 0 003.6 3.4" style="stroke:#fff" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-      <span data-brand="name">Everpool</span> <span class="tk" data-brand="ticker">$POOL</span>
-    </a>
-    <nav class="nav-links" aria-label="Primary">
-      <a href="#pool-engine">The pool engine</a>
-      <a href="#launch">How it works</a>
-      <a href="#why">Why Everpool</a>
-      <a href="#pools-live">Live pools</a>
-    </nav>
-  </div>
+  <a class="brand" href="#top" aria-label="Everpool home">
+    <svg width="21" height="30" viewBox="-1 -6 22 30" fill="none" aria-hidden="true">
+      <!-- unicorn horn (nod to pools.trade) -->
+      <path d="M9.0 1.4 L10.9 -4.8 L11.2 1.4 Z" style="fill:#fff"/>
+      <path d="M9.4 -0.3 10.8 0 M9.7 -1.9 10.9 -1.7 M10.1 -3.5 10.9 -3.4" style="stroke:var(--brand)" stroke-width="0.55" stroke-linecap="round"/>
+      <!-- droplet -->
+      <path d="M10 1S1 11 1 17a9 9 0 0018 0C19 11 10 1 10 1Z" style="fill:var(--brand)"/>
+      <path d="M6.4 16.6a3.6 3.6 0 003.6 3.4" style="stroke:#fff" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span data-brand="name">Everpool</span> <span class="tk" data-brand="ticker">$POOL</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#pool-engine">The pool engine</a>
+    <a href="#launch">How it works</a>
+    <a href="#why">Why Everpool</a>
+    <a href="#pools-live">Live pools</a>
+  </nav>
   <a class="btn btn-primary" href="#" data-brand="launch" data-cta="brand">Launch on Everpool</a>
 </header>
 
@@ -461,7 +462,7 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
 <footer>
   <div class="wrap foot">
     <a class="brand" href="#top" aria-label="Everpool home" style="font-size:18px">
-      <svg width="18" height="22" viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M10 1S1 11 1 17a9 9 0 0018 0C19 11 10 1 10 1Z" style="fill:var(--brand)"/></svg>
+      <svg width="17" height="25" viewBox="-1 -6 22 30" fill="none" aria-hidden="true"><path d="M9.0 1.4 L10.9 -4.8 L11.2 1.4 Z" style="fill:#fff"/><path d="M10 1S1 11 1 17a9 9 0 0018 0C19 11 10 1 10 1Z" style="fill:var(--brand)"/></svg>
       <span data-brand="name">Everpool</span>
     </a>
     <p class="disclaimer"><b>Preview build.</b> Everpool is a concept landing page, not investment advice. Figures are illustrative. Not affiliated with or endorsed by Uniswap; the pools.trade and Robinhood Chain names belong to their owners.</p>
@@ -626,3 +627,5 @@ void main(){
   else raf=requestAnimationFrame(render);
 })();
 </script>
+
+</body></html>
