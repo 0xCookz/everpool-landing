@@ -6,7 +6,7 @@
 <title>Everpool &mdash; launch a pool that grows itself &middot; pools.trade</title>
 <meta name="theme-color" content="#000000">
 <meta property="og:title" content="Everpool - a pool that grows itself">
-<meta property="og:description" content="Built on pools.trade for Robinhood blockchain.">
+<meta property="og:description" content="Launch a genuine pools.trade token, single-sided and free.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 </head>
@@ -460,9 +460,9 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
     </div>
     <div class="stats reveal" id="poolStats">
       <div class="stat"><div class="v mono" data-stat="pools">&mdash;</div><div class="l">Pools launched</div></div>
-      <div class="stat"><div class="v mono" data-stat="cycles">&mdash;</div><div class="l">Compound cycles run</div></div>
+      <div class="stat"><div class="v mono">0<span class="u"> WETH</span></div><div class="l">To launch &mdash; single-sided</div></div>
       <div class="stat"><div class="v mono">100<span class="u">%</span></div><div class="l">Of fees back to the pool</div></div>
-      <div class="stat"><div class="v mono">144</div><div class="l">Cycles a day, per pool</div></div>
+      <div class="stat"><div class="v mono">1<span class="u">B</span></div><div class="l">Fixed supply per token</div></div>
     </div>
     <p class="note" id="stats-note" style="text-align:center;margin-top:18px"><span class="livedot"></span> Live from Robinhood Chain &mdash; the counters climb as pools launch.</p>
   </div>
@@ -491,10 +491,9 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
   <div class="launch-panel glass-dark" role="dialog" aria-modal="true" aria-label="Launch a pool">
     <button class="launch-x" data-close type="button" aria-label="Close">&times;</button>
     <h3 class="launch-title">Launch a pool</h3>
-    <p class="launch-sub">Deploy a token on <b>pools.trade</b>. Its trading fees fold straight back into its pool, every ten minutes &mdash; and the liquidity can never be pulled.</p>
+    <p class="launch-sub">Deploy a genuine <b>pools.trade</b> token &mdash; single-sided, so there's <b>no capital to seed</b>, just gas. Liquidity locks forever and the fees auto-compound back into the pool.</p>
     <label class="lf">Token name<input id="lf-name" type="text" placeholder="Everpool" maxlength="32" autocomplete="off"></label>
     <label class="lf">Ticker<input id="lf-symbol" type="text" placeholder="POOL" maxlength="11" autocomplete="off"></label>
-    <label class="lf">WETH to seed the pool<input id="lf-seed" type="text" inputmode="decimal" placeholder="0.1" autocomplete="off"></label>
     <button class="btn btn-primary btn-lg launch-go" id="lf-go" type="button">Connect wallet &amp; launch</button>
     <p class="launch-status" id="lf-status" role="status"></p>
     <p class="launch-note" id="lf-note">You sign every step in your own wallet &mdash; we never touch your keys. You'll approve WETH, then launch.</p>
@@ -677,13 +676,11 @@ void main(){
 (function(){
   "use strict";
   var CONTRACTS = {
-    chainIdHex: "0xb626",                                   // Robinhood Chain testnet (46630)
-    chainName:  "Robinhood Chain Testnet",
-    rpc:        "https://rpc.testnet.chain.robinhood.com",
-    explorer:   "https://explorer.testnet.chain.robinhood.com",
-    launcher:   "",                                         // <-- EverpoolLauncher address (after deploy)
-    compounder: "",                                         // <-- EverpoolCompounder address (for live stats)
-    weth:       "0x7943e237c7F95DA44E0301572D358911207852Fa"
+    chainIdHex: "0x1237",                                   // Robinhood Chain mainnet (4663) — pools.trade launcher is mainnet-only
+    chainName:  "Robinhood Chain",
+    rpc:        "https://rpc.mainnet.chain.robinhood.com",
+    explorer:   "https://robinhoodchain.blockscout.com",
+    launcher:   ""                                          // <-- EverpoolPoolsLauncher address (after deploy)
   };
 
   var modal = document.getElementById("launchModal");
@@ -712,10 +709,9 @@ void main(){
     while(hex.length % 64 !== 0) hex += "0";
     return { lenWord: u32(BigInt(bytes.length)), data: hex, chunkBytes: 32 + Math.ceil(bytes.length/32)*32 };
   }
-  function encApprove(spender, amt){ return "0x095ea7b3" + addr32(spender) + u32(amt); }
-  function encLaunch(name, sym, seed){
+  function encLaunch(name, sym){   // launch(string,string) on EverpoolPoolsLauncher
     var n = strEnc(name), s = strEnc(sym);
-    return "0xb104b321" + u32(96n) + u32(BigInt(96 + n.chunkBytes)) + u32(seed) + n.lenWord + n.data + s.lenWord + s.data;
+    return "0xee69e768" + u32(64n) + u32(BigInt(64 + n.chunkBytes)) + n.lenWord + n.data + s.lenWord + s.data;
   }
   function toWei(str){
     str = (str||"").trim();
@@ -751,22 +747,17 @@ void main(){
     try{
       var name = document.getElementById("lf-name").value.trim();
       var sym = document.getElementById("lf-symbol").value.trim();
-      var seedStr = document.getElementById("lf-seed").value.trim();
       if(!name || !sym){ setStatus("Enter a name and a ticker.", true); return; }
       if(!eth){ setStatus("No wallet found &mdash; install MetaMask.", true); return; }
       if(!CONTRACTS.launcher){ setStatus("Not live yet &mdash; contract not deployed.", true); return; }
-      var seed; try{ seed = toWei(seedStr); }catch(_){ setStatus("Enter a valid WETH amount.", true); return; }
-      if(seed <= 0n){ setStatus("Enter the WETH amount to seed the pool.", true); return; }
 
       goBtn.disabled = true;
       setStatus("Connecting wallet&hellip;");
       var accs = await eth.request({ method:"eth_requestAccounts" }); account = accs[0];
       await ensureChain();
-      setStatus("Approving WETH&hellip; confirm in your wallet.");
-      var ah = await send(CONTRACTS.weth, encApprove(CONTRACTS.launcher, seed)); await wait(ah);
-      setStatus("Launching your pool&hellip; confirm in your wallet.");
-      var th = await send(CONTRACTS.launcher, encLaunch(name, sym, seed)); await wait(th);
-      setStatus("&#127881; Launched! " + txLink(th));
+      setStatus("Launching on pools.trade&hellip; confirm in your wallet.");
+      var th = await send(CONTRACTS.launcher, encLaunch(name, sym)); await wait(th);
+      setStatus("&#127881; Launched on pools.trade! " + txLink(th));
     }catch(e){
       var m = e && (e.message || e.code);
       setStatus(m ? ("Error: " + m) : "Something went wrong.", true);
@@ -775,7 +766,7 @@ void main(){
   goBtn.addEventListener("click", doLaunch);
 
   if(!eth){ goBtn.textContent = "Install a wallet to launch"; }
-  if(!CONTRACTS.launcher){ noteEl.innerHTML = "&#9888; Goes live on testnet the moment the contract is deployed. Until then this is a preview."; }
+  if(!CONTRACTS.launcher){ noteEl.innerHTML = "&#9888; Live the moment the Everpool launcher is deployed on Robinhood Chain. Until then this is a preview."; }
 
   /* ---- live stats: read the on-chain counters directly (no wallet needed) ---- */
   function fmtNum(bi){ return Number(bi).toLocaleString("en-US"); }
@@ -786,14 +777,12 @@ void main(){
     return (j && j.result && j.result !== "0x") ? BigInt(j.result) : null;
   }
   async function refreshStats(){
-    if(!CONTRACTS.compounder) return;                 // nothing deployed yet -> tiles stay "—"
+    if(!CONTRACTS.launcher) return;                   // nothing deployed yet -> tile stays "—"
     try{
-      var p = await rpcCall(CONTRACTS.compounder, "0xbe4fcd7a");   // poolsLaunched()
-      var c = await rpcCall(CONTRACTS.compounder, "0x83a7f55f");   // cyclesRun()
-      var pe = document.querySelector('[data-stat="pools"]'), ce = document.querySelector('[data-stat="cycles"]');
+      var p = await rpcCall(CONTRACTS.launcher, "0xbe4fcd7a");     // poolsLaunched()
+      var pe = document.querySelector('[data-stat="pools"]');
       if(p !== null && pe) pe.textContent = fmtNum(p);
-      if(c !== null && ce) ce.textContent = fmtNum(c);
-    }catch(e){ /* CSP-blocked (artifact preview) or offline — leave the em dashes */ }
+    }catch(e){ /* CSP-blocked (artifact preview) or offline — leave the em dash */ }
   }
   refreshStats();
   setInterval(refreshStats, 20000);
