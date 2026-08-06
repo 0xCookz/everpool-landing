@@ -109,8 +109,8 @@ header.nav::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 .nav-links a{transition:color .2s var(--ease);white-space:nowrap}
 .nav-links a:hover{color:#fff}
 header.nav > .btn-primary{margin-left:0}
-/* mobile: clean pill — logo + Connect + Launch; section links live in the footer */
-@media (max-width:820px){
+/* below ~1080 the section links move to the footer so the two CTAs never crowd */
+@media (max-width:1080px){
   .nav-links{display:none}
   header.nav{gap:10px;padding:8px 8px 8px 16px}
   .nav-cta{margin-left:auto}
