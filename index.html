@@ -5,6 +5,11 @@
 <meta name="theme-color" content="#08080b">
 <meta property="og:title" content="Everpool — launch a pool that grows itself">
 <meta property="og:description" content="Launch genuine pools.trade tokens on Robinhood Chain. Every trade feeds the pool; dev fees are burned. A pure-pool launchpad built for a constant snowball effect.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Everpool — launch a pool that grows itself">
+<meta name="twitter:image" content="/og.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="utf-8">
 
@@ -30,7 +35,7 @@
   --bg:#08080b;              /* single consistent near-black across all sections */
   --paper:#0c0c0e;           /* raised panel (neutral near-black) */
   --paper-2:#151519;
-  --ink:#fdeaf1;             /* primary text */
+  --ink:#ffffff;             /* primary text — pure white (no pink tint) */
   --muted:#c096a0;           /* secondary text */
   --faint:#8a636e;           /* tertiary */
   --brand:#e8005a;           /* pink sampled from the moving background */
@@ -174,7 +179,7 @@ section.band{padding:clamp(70px,10vh,120px) 0;position:relative}
 .band.tint{background:transparent}
 .section-head{max-width:660px;margin:0 0 54px}
 .section-head.center{margin-inline:auto;text-align:center}
-h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700}
+h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700;color:#fff}
 .section-head p{color:var(--muted);margin:16px 0 0;font-size:1.06rem;line-height:1.55}
 
 /* ---------- pool engine (signature) ------------------------------------- */
@@ -405,11 +410,25 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
   </div>
 </section>
 
+<!-- discover -->
+<section class="band" id="discover">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Discover</p>
+      <h2>Pools launched on Everpool.</h2>
+      <p>Every token launched through Everpool, live on Robinhood Chain. Each one has a pool that only grows and dev fees that burn.</p>
+    </div>
+    <div class="disc-grid reveal" id="discoverGrid">
+      <div class="disc-empty" id="discoverEmpty">Loading pools from the chain&hellip;</div>
+    </div>
+  </div>
+</section>
+
 <!-- launch / how -->
 <section class="band" id="launch">
   <div class="wrap">
     <div class="section-head center reveal">
-      <p class="eyebrow">Launch in one move</p>
+      <p class="eyebrow">Launch in <span style="color:var(--brand)">one move</span></p>
       <h2>One transaction. Then the pool runs itself.</h2>
       <p>You sign once to open the pool. From there, it compounds on its own &mdash; for as long as anyone trades.</p>
     </div>
@@ -484,20 +503,6 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
   </div>
 </section>
 
-<!-- discover -->
-<section class="band" id="discover">
-  <div class="wrap">
-    <div class="section-head center reveal">
-      <p class="eyebrow">Discover</p>
-      <h2>Pools launched on Everpool.</h2>
-      <p>Every token launched through Everpool, live on Robinhood Chain. Each one has a pool that only grows and dev fees that burn.</p>
-    </div>
-    <div class="disc-grid reveal" id="discoverGrid">
-      <div class="disc-empty" id="discoverEmpty">Loading pools from the chain&hellip;</div>
-    </div>
-  </div>
-</section>
-
 <!-- final -->
 <section class="band tint final" id="cta">
   <div class="wrap">
@@ -543,7 +548,6 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
         <a href="#why">Why Everpool</a>
         <a href="launch.html">Launch</a>
         <a href="docs.html">Docs</a>
-        <a href="https://github.com/0xCookz/everpool-contracts" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
     <p class="disclaimer"><b>Preview build.</b> Everpool launches genuine pools.trade tokens on Robinhood Chain &mdash; not investment advice. Not affiliated with or endorsed by Uniswap or Robinhood; those names belong to their owners.</p>
