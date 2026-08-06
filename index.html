@@ -805,10 +805,9 @@ void main(){
       try{ var accs = await eth.request({ method:"eth_requestAccounts" }); await ensureChain(); setConnected(accs[0]); }
       catch(e){ /* user rejected — leave as-is */ }
     });
-    if(eth){
-      eth.request({ method:"eth_accounts" }).then(function(a){ if(a && a[0]) setConnected(a[0]); }).catch(function(){});
-      if(eth.on) eth.on("accountsChanged", function(a){ setConnected(a && a[0] ? a[0] : null); });
-    }
+    /* No wallet calls on load — the wallet is only touched when the user clicks Connect.
+       We just listen for account changes after they've connected (passive, no popup). */
+    if(eth && eth.on) eth.on("accountsChanged", function(a){ setConnected(a && a[0] ? a[0] : null); });
   }
 
   async function doLaunch(){
