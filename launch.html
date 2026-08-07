@@ -302,6 +302,10 @@ textarea{resize:vertical;min-height:74px;line-height:1.5}
     var prov=pickEth();
     if(!prov){setStatus("err","<div class='body'><h3>No wallet found</h3><p>Install MetaMask to launch from Everpool.</p></div>");return}
     try{
+      // Force MetaMask to show the account picker so you can choose which wallet to use
+      // (otherwise it silently reconnects the last-used account).
+      try{ await prov.request({method:"wallet_requestPermissions",params:[{eth_accounts:{}}]}); }
+      catch(pe){ if(pe&&pe.code===4001) throw pe; }
       var accs=await prov.request({method:"eth_requestAccounts"});
       await ensureChain(prov);
       account=accs[0];
