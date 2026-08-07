@@ -422,11 +422,11 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
   <div class="wrap">
     <div class="section-head center reveal">
       <p class="eyebrow">Discover</p>
-      <h2>Pools launched on Everpool.</h2>
-      <p>Every token launched through Everpool, live on Robinhood Chain. Each one has a pool that only grows and dev fees that burn.</p>
+      <h2>Every launch lives on pools.trade.</h2>
+      <p>Tokens launched with Everpool are real, verified pools.trade tokens &mdash; bonding curve, locked liquidity, and a dev fee that burns. Explore them where they trade.</p>
     </div>
-    <div class="disc-grid reveal" id="discoverGrid">
-      <div class="disc-empty" id="discoverEmpty">Loading pools from the chain&hellip;</div>
+    <div class="reveal" style="text-align:center">
+      <a class="btn btn-primary btn-lg" href="https://pools.trade" target="_blank" rel="noopener">Explore on pools.trade &#8599;</a>
     </div>
   </div>
 </section>
@@ -501,7 +501,7 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
       <h2>Numbers that only climb.</h2>
     </div>
     <div class="stats reveal" id="poolStats">
-      <div class="stat"><div class="v mono" data-stat="pools">&mdash;</div><div class="l">Pools launched</div></div>
+      <div class="stat"><div class="v mono">100<span class="u">%</span></div><div class="l">Of the dev fee burned</div></div>
       <div class="stat"><div class="v mono">0<span class="u"> WETH</span></div><div class="l">To launch &mdash; single-sided</div></div>
       <div class="stat"><div class="v mono">0<span class="u">%</span></div><div class="l">To the dev &mdash; the rest burns</div></div>
       <div class="stat"><div class="v mono">1<span class="u">B</span></div><div class="l">Fixed supply per token</div></div>
@@ -845,57 +845,8 @@ void main(){
     var j = await res.json();
     return (j && j.result && j.result !== "0x") ? BigInt(j.result) : null;
   }
-  async function refreshStats(){
-    if(!CONTRACTS.launcher) return;                   // nothing deployed yet -> tile stays "—"
-    try{
-      var p = await rpcCall(CONTRACTS.launcher, "0xbe4fcd7a");     // poolsLaunched()
-      var pe = document.querySelector('[data-stat="pools"]');
-      if(p !== null && pe) pe.textContent = fmtNum(p);
-    }catch(e){ /* CSP-blocked (artifact preview) or offline — leave the em dash */ }
-  }
-  refreshStats();
-  setInterval(refreshStats, 20000);
-
-  /* ---- discover: list every token launched through Everpool ---- */
-  function escapeHtml(s){ return (s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function hexToUtf8(hex){ var s=""; for(var i=0;i<hex.length;i+=2){ var c=parseInt(hex.substr(i,2),16); if(c) s+=String.fromCharCode(c); } try{ return decodeURIComponent(escape(s)); }catch(e){ return s; } }
-  function decodeLaunched(dataHex){          // event data = (string name, string symbol), both non-indexed
-    var d=(dataHex||"").replace(/^0x/,"");
-    function wInt(i){ return parseInt(d.substr(i*64,64),16); }
-    function strAt(off){ var p=off*2, len=parseInt(d.substr(p,64),16); return hexToUtf8(d.substr(p+64,len*2)); }
-    return { name:strAt(wInt(0)), symbol:strAt(wInt(1)) };
-  }
-  function shortAddr(a){ return a.slice(0,6)+"…"+a.slice(-4); }
-  async function rpcRaw(method, params){
-    var res=await fetch(CONTRACTS.rpc,{method:"POST",headers:{"content-type":"application/json"},
-      body:JSON.stringify({jsonrpc:"2.0",id:1,method:method,params:params})});
-    var j=await res.json(); return j && j.result;
-  }
-  async function loadDiscover(){
-    var grid=document.getElementById("discoverGrid"), empty=document.getElementById("discoverEmpty");
-    if(!grid || !CONTRACTS.launcher) return;
-    try{
-      var logs=await rpcRaw("eth_getLogs",[{ address:CONTRACTS.launcher, topics:[CONTRACTS.launchedTopic], fromBlock:"0x0", toBlock:"latest" }]);
-      if(!Array.isArray(logs) || logs.length===0){
-        if(empty) empty.innerHTML='No pools launched yet. <a href="launch.html">Launch the first one &rarr;</a>';
-        return;
-      }
-      var items=logs.map(function(lg){
-        var meta=decodeLaunched(lg.data);
-        return { token:"0x"+lg.topics[1].slice(-40), name:meta.name||"Token", symbol:(meta.symbol||"").toUpperCase() };
-      }).reverse();
-      grid.innerHTML=items.map(function(t){
-        var ini=escapeHtml((t.symbol||t.name||"P").slice(0,1).toUpperCase());
-        return '<a class="tok" href="token.html?a='+t.token+'">'
-          +'<span class="tok__ic">'+ini+'</span>'
-          +'<span class="tok__b"><span class="tok__n">'+escapeHtml(t.name)+'</span>'
-          +'<span class="tok__s">$'+escapeHtml(t.symbol)+'</span>'
-          +'<span class="tok__a">'+shortAddr(t.token)+'</span></span></a>';
-      }).join("");
-    }catch(e){ if(empty) empty.textContent="Couldn't load pools right now — try again in a moment."; }
-  }
-  loadDiscover();
-  setInterval(loadDiscover, 30000);
+  /* Discover + per-token pages now live on pools.trade (tokens launch through pools.trade's
+     official flow with the BurnVault as fee recipient), so no on-chain launcher fetch here. */
 })();
 </script>
 
