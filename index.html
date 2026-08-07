@@ -276,6 +276,11 @@ h2{font-size:clamp(1.95rem,4.4vw,3.05rem);font-weight:700;color:#fff}
 .tok__n{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tok__s{font-family:var(--f-mono);font-size:12px;color:var(--brand-hi);margin-top:2px}
 .tok__a{font-family:var(--f-mono);font-size:11px;color:var(--faint);margin-top:5px}
+.tok--official{grid-column:1/-1;background:linear-gradient(120deg,rgba(232,0,90,.16),var(--paper) 60%);border-color:var(--brand);padding:22px 24px;gap:18px;box-shadow:0 0 0 1px rgba(232,0,90,.25),0 18px 50px -24px rgba(232,0,90,.5)}
+.tok--official .tok__ic{width:62px;height:62px;border-radius:16px;font-size:26px}
+.tok--official .tok__n{font-size:21px}
+.tok--official .tok__s{font-size:14px}
+.tok__badge{display:inline-block;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--brand);padding:3px 10px;border-radius:999px;margin-bottom:8px}
 
 /* ---------- final -------------------------------------------------------- */
 .final{text-align:center}
@@ -863,6 +868,7 @@ void main(){
   var FEEPOS="0xd35E9CA72F64C7F93BE30fad67524323396B36D7";              // creator-fee position NFT
   var VAULT="0x39a750af34db27d8611b2836a31d301dfe366bfa";               // Everpool BurnVault
   var WRAPPER="0x0000FffFBE8efE702c8703aE3477FF5dE3d319C0";             // pools.trade official launch entry
+  var OFFICIAL="0xD977f0932fada7fDCB69CCd7e9C7c82ce33E3963";            // official Everpool platform token (pinned)
   var TRANSFER=E.id("Transfer(address,address,uint256)");
   var LAUNCHED="0x67226bacccef969dab310a9e55dc1cf821363658e433fd330344f5cc00c79ac8";
   var read=new E.JsonRpcProvider(RPC);
@@ -874,9 +880,14 @@ void main(){
   // A token is "Everpool's" iff its creator-fee position was minted to the BurnVault at launch.
   async function discover(){
     var latest=await read.getBlockNumber();
+    var topics=[TRANSFER,null,E.zeroPadValue(VAULT,32)];
     var logs=[];
-    for(var hi=latest; hi>latest-30000 && logs.length<50; hi-=6000){
-      try{ logs=logs.concat(await read.getLogs({address:FEEPOS,topics:[TRANSFER,null,E.zeroPadValue(VAULT,32)],fromBlock:Math.max(0,hi-6000),toBlock:hi})); }catch(e){}
+    for(var hi=latest; hi>latest-45000 && logs.length<60; hi-=5000){
+      var lo=Math.max(0,hi-5000), got=null;
+      for(var attempt=0; attempt<3 && got===null; attempt++){
+        try{ got=await read.getLogs({address:FEEPOS,topics:topics,fromBlock:lo,toBlock:hi}); }catch(e){ got=null; }
+      }
+      if(got&&got.length) logs=logs.concat(got);
     }
     logs.sort(function(a,b){return b.blockNumber-a.blockNumber;});
     var seen={}, tokens=[];
@@ -899,18 +910,22 @@ void main(){
     if(!list.length){ grid.innerHTML='<div class="disc-empty">No launches yet &mdash; <a href="launch.html">be the first &#8594;</a></div>'; return; }
     grid.innerHTML="";
     list.forEach(function(t){
+      var off=t.addr.toLowerCase()===OFFICIAL.toLowerCase();
       var a=document.createElement("a");
-      a.className="tok"; a.href="https://pools.trade/t/"+t.addr; a.target="_blank"; a.rel="noopener";
+      a.className="tok"+(off?" tok--official":""); a.href="https://pools.trade/t/"+t.addr; a.target="_blank"; a.rel="noopener";
       var ini=(t.sym||t.name||"?").slice(0,1).toUpperCase();
       a.innerHTML='<div class="tok__ic" style="background:'+colorFor(t.addr)+'">'+esc(ini)+'</div>'+
-        '<div class="tok__b"><div class="tok__n">'+esc(t.name)+'</div>'+
+        '<div class="tok__b">'+(off?'<span class="tok__badge">&#9733; Official token</span>':'')+
+        '<div class="tok__n">'+esc(t.name)+'</div>'+
         (t.sym?'<div class="tok__s">$'+esc(t.sym)+'</div>':'')+
         '<div class="tok__a">'+short(t.addr)+' &middot; 🔥 fee burns</div></div>';
       grid.appendChild(a);
     });
   }
   discover().then(function(addrs){
-    if(!addrs.length){ render([]); return; }
+    // always pin the official Everpool token first, even if it falls outside the scan window
+    addrs=(addrs||[]).filter(function(a){return a.toLowerCase()!==OFFICIAL.toLowerCase();});
+    addrs.unshift(E.getAddress(OFFICIAL));
     return Promise.all(addrs.slice(0,12).map(info)).then(render);
   }).catch(function(){
     grid.innerHTML='<div class="disc-empty">Couldn’t reach the chain right now. <a href="https://pools.trade" target="_blank" rel="noopener">Browse on pools.trade &#8594;</a></div>';
