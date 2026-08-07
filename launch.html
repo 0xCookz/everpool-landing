@@ -181,13 +181,12 @@ textarea{resize:vertical;min-height:74px;line-height:1.5}
     CHAIN_ID:4663, CHAIN_HEX:"0x1237",
     EXPLORER:"https://robinhoodchain.blockscout.com",
     POOLS:"https://pools.trade",
-    LAUNCHER:"0x00004c4ccc709Ef590F7C81102C0689F0263D4e9",
+    WRAPPER:"0x0000FffFBE8efE702c8703aE3477FF5dE3d319C0",
     FACTORY:"0x000000e200088D55C39a11F609E5F667729ad49b",
-    STRATEGY:"0x544ef36801E90eE56bcd699Ed51A63CFCEaC8ec9",
+    STRATEGY:"0x23f8209572b4a1C2AD88A42749E830791Fb027f1",
     BURN_VAULT:"0x39a750af34db27d8611b2836a31d301dfe366bfa"
   };
   var SUPPLY=1000000000n*(10n**18n);
-  var CFG_TAIL=[10000n,60n,198060n,-208980n,0n,0n];
   var E=window.ethers;
   var abi=E.AbiCoder.defaultAbiCoder();
   var read=new E.JsonRpcProvider(CFG.RPC);
@@ -215,22 +214,22 @@ textarea{resize:vertical;min-height:74px;line-height:1.5}
       [[m.description||"",m.website||"",m.image||"","0x"]]);
   }
   function encodeConfig(feeRecipient){
-    return abi.encode(["address","uint256","uint256","int256","int256","uint256","uint256"],
-      [feeRecipient].concat(CFG_TAIL));
+    return abi.encode(["address"],[feeRecipient]); // 1 word = creator fee recipient -> BurnVault
   }
   function graffitiFor(creator){return E.keccak256(abi.encode(["address"],[creator]))}
   function predictToken(name,symbol,creator){
-    return factory.getUERC20Address(name,symbol,18,CFG.LAUNCHER,graffitiFor(creator));
+    // via the wrapper: factory msg.sender = wrapper, graffiti = keccak(creator EOA)
+    return factory.getUERC20Address(name,symbol,18,CFG.WRAPPER,graffitiFor(creator));
   }
   async function buildLaunch(o){
     var token=await predictToken(o.name,o.symbol,o.creator);
     var tokenData=encodeMetadata(o);
-    var createData=iface.encodeFunctionData("createToken",[CFG.FACTORY,o.name,o.symbol,18,SUPPLY,CFG.LAUNCHER,tokenData]);
+    var createData=iface.encodeFunctionData("createToken",[CFG.FACTORY,o.name,o.symbol,18,SUPPLY,CFG.WRAPPER,tokenData]);
     var configData=encodeConfig(CFG.BURN_VAULT);
     var salt=E.hexlify(E.randomBytes(32));
     var distData=iface.encodeFunctionData("distributeToken",[token,[CFG.STRATEGY,SUPPLY,configData],salt]);
     var data=iface.encodeFunctionData("multicall",[[createData,distData]]);
-    return {to:CFG.LAUNCHER,data:data,value:"0x0",token:token};
+    return {to:CFG.WRAPPER,data:data,value:"0x0",token:token};
   }
 
   function vals(){
