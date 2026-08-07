@@ -422,11 +422,14 @@ footer{border-top:1px solid var(--line-soft);padding:38px 0 58px;color:var(--fai
   <div class="wrap">
     <div class="section-head center reveal">
       <p class="eyebrow">Discover</p>
-      <h2>Every launch lives on pools.trade.</h2>
-      <p>Tokens launched with Everpool are real, verified pools.trade tokens &mdash; bonding curve, locked liquidity, and a dev fee that burns. Explore them where they trade.</p>
+      <h2>Launched with Everpool.</h2>
+      <p>Every token below launched through Everpool &mdash; a real pools.trade token with a dev fee that burns forever. Read live from Robinhood Chain.</p>
     </div>
-    <div class="reveal" style="text-align:center">
-      <a class="btn btn-primary btn-lg" href="https://pools.trade" target="_blank" rel="noopener">Explore on pools.trade &#8599;</a>
+    <div id="ep-tokens" class="disc-grid reveal" aria-live="polite">
+      <div class="disc-empty" id="ep-tok-loading">Reading Robinhood Chain&hellip;</div>
+    </div>
+    <div class="reveal" style="text-align:center;margin-top:34px">
+      <a class="btn btn-primary btn-lg" href="launch.html">Launch yours &#8594;</a>
     </div>
   </div>
 </section>
@@ -845,8 +848,73 @@ void main(){
     var j = await res.json();
     return (j && j.result && j.result !== "0x") ? BigInt(j.result) : null;
   }
-  /* Discover + per-token pages now live on pools.trade (tokens launch through pools.trade's
-     official flow with the BurnVault as fee recipient), so no on-chain launcher fetch here. */
+  /* Discover is rendered live from-chain by the block below. */
+})();
+</script>
+
+<!-- live Discover: read Everpool-launched tokens straight from Robinhood Chain -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+<script>
+(function(){
+  var grid=document.getElementById("ep-tokens");
+  if(!grid||!window.ethers) return;
+  var E=window.ethers;
+  var RPC="https://rpc.mainnet.chain.robinhood.com";
+  var FEEPOS="0xd35E9CA72F64C7F93BE30fad67524323396B36D7";              // creator-fee position NFT
+  var VAULT="0x39a750af34db27d8611b2836a31d301dfe366bfa";               // Everpool BurnVault
+  var WRAPPER="0x0000FffFBE8efE702c8703aE3477FF5dE3d319C0";             // pools.trade official launch entry
+  var TRANSFER=E.id("Transfer(address,address,uint256)");
+  var LAUNCHED="0x67226bacccef969dab310a9e55dc1cf821363658e433fd330344f5cc00c79ac8";
+  var read=new E.JsonRpcProvider(RPC);
+  var COLORS=["#e8005a","#f2008a","#c40e61","#ff2d7e","#a30b52"];
+  function colorFor(a){ return COLORS[parseInt(a.slice(2,8),16)%COLORS.length]; }
+  function short(a){ return a.slice(0,6)+"…"+a.slice(-4); }
+  function esc(s){ return (s||"").replace(/[<>&]/g,function(c){return{"<":"&lt;",">":"&gt;","&":"&amp;"}[c];}); }
+
+  // A token is "Everpool's" iff its creator-fee position was minted to the BurnVault at launch.
+  async function discover(){
+    var latest=await read.getBlockNumber();
+    var logs=[];
+    for(var hi=latest; hi>latest-30000 && logs.length<50; hi-=6000){
+      try{ logs=logs.concat(await read.getLogs({address:FEEPOS,topics:[TRANSFER,null,E.zeroPadValue(VAULT,32)],fromBlock:Math.max(0,hi-6000),toBlock:hi})); }catch(e){}
+    }
+    logs.sort(function(a,b){return b.blockNumber-a.blockNumber;});
+    var seen={}, tokens=[];
+    for(var i=0;i<logs.length;i++){
+      var h=logs[i].transactionHash; if(seen[h])continue; seen[h]=1;
+      try{
+        var rc=await read.getTransactionReceipt(h);
+        var lg=rc.logs.find(function(x){return x.topics[0]===LAUNCHED && x.address.toLowerCase()===WRAPPER.toLowerCase();});
+        if(lg) tokens.push(E.getAddress("0x"+lg.topics[1].slice(26)));
+      }catch(e){}
+    }
+    return tokens;
+  }
+  async function info(addr){
+    var c=new E.Contract(addr,["function name() view returns(string)","function symbol() view returns(string)"],read);
+    var n="",s=""; try{n=await c.name();}catch(e){} try{s=await c.symbol();}catch(e){}
+    return {addr:addr,name:n||short(addr),sym:s};
+  }
+  function render(list){
+    if(!list.length){ grid.innerHTML='<div class="disc-empty">No launches yet &mdash; <a href="launch.html">be the first &#8594;</a></div>'; return; }
+    grid.innerHTML="";
+    list.forEach(function(t){
+      var a=document.createElement("a");
+      a.className="tok"; a.href="https://pools.trade/t/"+t.addr; a.target="_blank"; a.rel="noopener";
+      var ini=(t.sym||t.name||"?").slice(0,1).toUpperCase();
+      a.innerHTML='<div class="tok__ic" style="background:'+colorFor(t.addr)+'">'+esc(ini)+'</div>'+
+        '<div class="tok__b"><div class="tok__n">'+esc(t.name)+'</div>'+
+        (t.sym?'<div class="tok__s">$'+esc(t.sym)+'</div>':'')+
+        '<div class="tok__a">'+short(t.addr)+' &middot; 🔥 fee burns</div></div>';
+      grid.appendChild(a);
+    });
+  }
+  discover().then(function(addrs){
+    if(!addrs.length){ render([]); return; }
+    return Promise.all(addrs.slice(0,12).map(info)).then(render);
+  }).catch(function(){
+    grid.innerHTML='<div class="disc-empty">Couldn’t reach the chain right now. <a href="https://pools.trade" target="_blank" rel="noopener">Browse on pools.trade &#8594;</a></div>';
+  });
 })();
 </script>
 
