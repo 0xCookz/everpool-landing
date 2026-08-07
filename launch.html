@@ -15,7 +15,7 @@
 :root{
   --bg:#08080b; --panel:#101017; --panel2:#15151d; --line:#23232e;
   --ink:#ffffff; --mut:#a2a2b0; --faint:#6b6b78;
-  --brand:#e8005a; --brand-ink:#e8005a; --ok:#8ef6c9;
+  --brand:#e8005a; --brand-ink:#e8005a; --ok:#8ef6c9; --bad:#ff6b8a;
   --sans:"Hanken Grotesk",-apple-system,system-ui,sans-serif;
   --disp:"Familjen Grotesk","Bricolage Grotesque",var(--sans);
   --mono:"Space Mono",ui-monospace,monospace;
@@ -27,45 +27,78 @@ body{min-height:100vh;position:relative;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(60% 45% at 50% -8%,rgba(232,0,90,.34),transparent 70%),radial-gradient(45% 40% at 88% 8%,rgba(242,0,137,.20),transparent 72%),radial-gradient(55% 45% at 6% 22%,rgba(232,0,90,.14),transparent 74%)}
 a{color:inherit}
-.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:26px 22px 70px}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px}
+.wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:26px 22px 90px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
 .brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:700;font-size:19px;text-decoration:none;letter-spacing:-.01em}
 .back{color:var(--mut);text-decoration:none;font-size:14px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;transition:.2s}
 .back:hover{color:var(--ink);border-color:var(--brand)}
+.wallet{display:flex;align-items:center;gap:9px}
+.wbtn{font-family:var(--sans);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:.2s}
+.wbtn:hover{border-color:var(--brand)}
+.wbtn.on{border-color:rgba(142,246,201,.4);color:var(--ok);font-family:var(--mono);font-size:12.5px}
 
-.head{margin:6px 0 24px}
+.head{margin:2px 0 22px}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-ink);margin:0 0 10px}
-h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,6vw,42px);line-height:1.03;letter-spacing:-.025em;margin:0 0 12px}
-.head p{color:var(--mut);font-size:16px;line-height:1.55;margin:0;max-width:52ch}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,6vw,44px);line-height:1.03;letter-spacing:-.025em;margin:0 0 12px}
+.head p{color:var(--mut);font-size:16px;line-height:1.55;margin:0;max-width:54ch}
 .head b{color:var(--ink);font-weight:600}
 
-.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px}
-.card h2{font-family:var(--disp);font-size:16px;margin:0 0 4px}
-.card .sub{color:var(--mut);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:16px}
+label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin:0 0 7px}
+label span{color:var(--faint);font-weight:400}
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+input,textarea{width:100%;background:#0c0c12;border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--ink);font-family:var(--sans);font-size:15px;transition:.15s}
+input:focus,textarea:focus{border-color:var(--brand);outline:none}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+textarea{resize:vertical;min-height:74px;line-height:1.5}
+.row{display:grid;grid-template-columns:1fr 150px;gap:12px}
+@media(max-width:480px){.row{grid-template-columns:1fr}}
+.hint{font-size:12px;color:var(--faint);margin:6px 2px 0;line-height:1.45}
 
-/* burn address */
-.addr-row{display:flex;align-items:center;gap:10px;background:#0c0c12;border:1px solid var(--line);border-radius:13px;padding:13px 14px}
-.addr-row .a{font-family:var(--mono);font-size:13.5px;color:var(--ok);word-break:break-all;flex:1}
-.copy{background:var(--brand);border:0;color:#fff;font-family:var(--sans);font-weight:700;font-size:13px;padding:9px 15px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:.2s}
-.copy:hover{filter:brightness(1.08)}
+.burnbar{display:flex;gap:11px;align-items:flex-start;background:rgba(232,0,90,.08);border:1px solid rgba(232,0,90,.28);border-radius:14px;padding:13px 15px;margin-bottom:16px}
+.burnbar svg{flex:0 0 auto;margin-top:1px;stroke:var(--brand)}
+.burnbar p{margin:0;font-size:13px;color:var(--mut);line-height:1.5}
+.burnbar b{color:var(--ink);font-weight:600}
 
-/* steps */
-ol.steps{counter-reset:s;list-style:none;margin:0;padding:0}
-ol.steps li{counter-increment:s;position:relative;padding:11px 0 11px 42px;border-top:1px solid var(--line);color:var(--mut);font-size:14.5px;line-height:1.5}
-ol.steps li:first-child{border-top:0}
-ol.steps li::before{content:counter(s);position:absolute;left:0;top:11px;width:28px;height:28px;border-radius:50%;background:rgba(232,0,90,.14);border:1px solid rgba(232,0,90,.5);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
-ol.steps li b{color:var(--ink);font-weight:600}
-ol.steps code{font-family:var(--mono);font-size:12.5px;background:#000;padding:2px 6px;border-radius:5px;color:var(--ok)}
+.preview{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);margin-top:6px;padding-top:16px}
+.pimg{width:46px;height:46px;border-radius:12px;background:#0c0c12 center/cover no-repeat;border:1px solid var(--line);flex:0 0 auto}
+.pmeta{min-width:0;flex:1}
+.pmeta .pn{font-family:var(--disp);font-weight:700;font-size:15px;line-height:1.1}
+.pmeta .pt{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.paddr{font-family:var(--mono);font-size:11.5px;color:var(--ok);word-break:break-all}
+.paddr .k{color:var(--faint)}
 
-.go{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:14px;background:var(--brand);color:#fff;font-family:var(--sans);font-weight:700;font-size:16px;padding:16px;cursor:pointer;text-decoration:none;transition:.2s;margin-top:4px}
-.go:hover{filter:brightness(1.08)}
-.note{font-size:12.5px;color:var(--faint);margin:12px 2px 0;line-height:1.5;text-align:center}
+.go{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:14px;background:var(--brand);color:#fff;font-family:var(--sans);font-weight:700;font-size:16px;padding:16px;cursor:pointer;text-decoration:none;transition:.2s;margin-top:2px}
+.go:hover:not(:disabled){filter:brightness(1.08)}
+.go:disabled{opacity:.5;cursor:not-allowed}
+.go .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.note{font-size:12px;color:var(--faint);margin:12px 2px 0;line-height:1.5;text-align:center}
+
+.status{margin-top:16px;font-size:14px;line-height:1.55;border-radius:14px;padding:0;overflow:hidden;display:none}
+.status.show{display:block}
+.status .body{padding:16px 18px}
+.status.info{background:rgba(232,0,90,.07);border:1px solid rgba(232,0,90,.25)}
+.status.ok{background:rgba(142,246,201,.07);border:1px solid rgba(142,246,201,.3)}
+.status.err{background:rgba(255,107,138,.08);border:1px solid rgba(255,107,138,.35)}
+.status h3{margin:0 0 6px;font-family:var(--disp);font-size:16px}
+.status.ok h3{color:var(--ok)} .status.err h3{color:var(--bad)}
+.status p{margin:4px 0;color:var(--mut)}
+.status a{color:var(--ok);text-decoration:none;font-family:var(--mono);font-size:12.5px;word-break:break-all}
+.status a:hover{text-decoration:underline}
+.steplist{list-style:none;margin:8px 0 0;padding:0;font-family:var(--mono);font-size:12.5px}
+.steplist li{padding:3px 0;color:var(--faint)}
+.steplist li.done{color:var(--ok)} .steplist li.active{color:var(--ink)}
+.steplist li::before{content:"○ ";}
+.steplist li.done::before{content:"✓ ";color:var(--ok)}
+.steplist li.active::before{content:"◆ ";color:var(--brand)}
 
 .mech{display:grid;gap:10px;margin-top:22px}
-.mech div{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;color:var(--mut);line-height:1.45}
+.mech div{display:flex;gap:11px;align-items:flex-start;font-size:13px;color:var(--mut);line-height:1.45}
 .mech svg{flex:0 0 auto;margin-top:1px;stroke:var(--brand)}
 .mech b{color:var(--ink);font-weight:600}
-.foot{margin-top:26px;font-size:11.5px;color:var(--faint);line-height:1.5}
+.foot{margin-top:24px;font-size:11.5px;color:var(--faint);line-height:1.5}
 </style>
 
 <div class="wrap">
@@ -74,60 +107,253 @@ ol.steps code{font-family:var(--mono);font-size:12.5px;background:#000;padding:2
       <img src="logo.png" alt="" width="30" height="30" style="display:block">
       <span>Everpool</span>
     </a>
-    <a class="back" href="index.html">&larr; Back</a>
+    <div class="wallet">
+      <a class="back" href="index.html">&larr; Back</a>
+      <button class="wbtn" id="connect" type="button">Connect wallet</button>
+    </div>
   </div>
 
   <div class="head">
     <p class="eyebrow">Launch on Everpool</p>
     <h1>Launch your token.</h1>
-    <p>Everpool launches on <b>pools.trade</b>'s official launchpad &mdash; a real, verified token with a pool that grows itself. The only twist: your <b>dev fee is set to burn</b>. You point the creator fee at Everpool's <b>BurnVault</b>, and every bit of it is destroyed forever. No dev cut.</p>
+    <p>One signature. A real, verified token on <b>pools.trade</b> with a pool that grows itself &mdash; and a <b>dev fee that burns forever</b>. You never leave Everpool.</p>
+  </div>
+
+  <div class="burnbar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s5 5 5 10a5 5 0 01-10 0c0-2 1-4 2-5"/></svg>
+    <p><b>Dev fee &rarr; burn, baked in.</b> Everpool sets your token's creator fee recipient to the on-chain <b>BurnVault</b>. Every bit of the dev fee is destroyed. You can't collect it &mdash; and neither can we.</p>
   </div>
 
   <div class="card">
-    <h2>1 &middot; Copy your burn address</h2>
-    <p class="sub">This is Everpool's <b>BurnVault</b>. Anything sent here is burned to the dead address. You'll paste it as your <b>Fee recipient</b> on pools.trade.</p>
-    <div class="addr-row">
-      <span class="a" id="vault">0x39a750af34db27d8611b2836a31d301dfe366bfa</span>
-      <button class="copy" id="copy" type="button">Copy</button>
+    <div class="row">
+      <div class="field">
+        <label for="name">Token name</label>
+        <input id="name" type="text" maxlength="32" placeholder="Everpool" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="symbol">Ticker</label>
+        <input id="symbol" type="text" maxlength="11" placeholder="POOL" autocomplete="off" style="text-transform:uppercase">
+      </div>
+    </div>
+    <div class="field">
+      <label for="desc">Description <span>&mdash; optional</span></label>
+      <textarea id="desc" maxlength="400" placeholder="What is your token about?"></textarea>
+    </div>
+    <div class="field">
+      <label for="website">Website / X <span>&mdash; optional</span></label>
+      <input id="website" type="url" placeholder="https://x.com/yourtoken" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="image">Image URL <span>&mdash; a direct link to a PNG/JPG</span></label>
+      <input id="image" type="url" placeholder="https://.../logo.png" autocomplete="off">
+      <p class="hint">Paste a public image link. Upload-in-place is coming; for now host it anywhere (Imgur, your site, IPFS) and paste the URL.</p>
+    </div>
+
+    <div class="preview" id="preview" style="display:none">
+      <div class="pimg" id="pimg"></div>
+      <div class="pmeta">
+        <div class="pn" id="pn">&mdash;</div>
+        <div class="pt" id="pt">&mdash;</div>
+        <div class="paddr" id="paddr"><span class="k">address &middot; </span><span id="paddrv">connect wallet to preview</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>2 &middot; Launch on pools.trade</h2>
-    <p class="sub">Fill your token, turn on <b>Creator fee</b>, and paste the address above as the <b>Fee recipient</b>. That's what makes the dev fee burn.</p>
-    <ol class="steps">
-      <li>Hit <b>Launch a token</b> &rarr; pick <b>Instant</b> or <b>Crowd Launch</b>.</li>
-      <li>Add your <b>name, ticker, image</b> and description.</li>
-      <li>Toggle <b>Creator fee</b> ON.</li>
-      <li>Paste the burn address into <b>Fee recipient</b>.</li>
-      <li>Launch. Your token is live, and its dev fee burns forever.</li>
-    </ol>
-    <a class="go" href="https://pools.trade/create" target="_blank" rel="noopener">Launch on pools.trade &#8599;</a>
-    <p class="note">Everpool never touches your keys or your token &mdash; you launch it yourself on pools.trade. Everpool just provides the burn address + keeper.</p>
-  </div>
+  <button class="go" id="launch" type="button" disabled>Connect wallet to launch</button>
+  <p class="note">Everpool never holds your keys or your token. Supply is fixed at <b>1,000,000,000</b>, liquidity locks forever, and the dev fee burns. You only pay gas.</p>
+
+  <div class="status" id="status"><div class="body"></div></div>
 
   <div class="mech">
-    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg><span><b>The pool only grows.</b> ~80% of every trade's fee auto-compounds into the locked pool &mdash; a snowball that never stops.</span></div>
-    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s5 5 5 10a5 5 0 01-10 0c0-2 1-4 2-5"/></svg><span><b>Your dev fee burns.</b> The ~20% creator share goes to the BurnVault and is sent to the dead address. No dev cut, ever.</span></div>
-    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span><b>Genuine pools.trade token.</b> Real bonding-curve launch, verified, liquidity locked forever.</span></div>
+    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg><span><b>The pool only grows.</b> Most of every trade's fee auto-compounds into the locked pool &mdash; a snowball that never stops.</span></div>
+    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s5 5 5 10a5 5 0 01-10 0c0-2 1-4 2-5"/></svg><span><b>Your dev fee burns.</b> The creator share is sent to the BurnVault and destroyed. No dev cut, ever.</span></div>
+    <div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span><b>Genuine pools.trade token.</b> Real launch, verified, tradable the moment it's live.</span></div>
   </div>
 
-  <p class="foot"><b>Preview build.</b> Everpool routes to pools.trade's official launch with a burn address as the fee recipient. Not investment advice. Not affiliated with or endorsed by Uniswap or Robinhood.</p>
+  <p class="foot"><b>Preview build.</b> Everpool builds pools.trade's official launch transaction with the creator fee recipient set to a burn address. Not investment advice. Not affiliated with or endorsed by Uniswap or Robinhood.</p>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <script>
 (function(){
-  var VAULT="0x39a750af34db27d8611b2836a31d301dfe366bfa";
-  var btn=document.getElementById("copy");
-  btn.addEventListener("click",function(){
-    (navigator.clipboard?navigator.clipboard.writeText(VAULT):Promise.reject()).then(function(){
-      btn.textContent="Copied ✓"; setTimeout(function(){btn.textContent="Copy";},1600);
-    }).catch(function(){
-      var r=document.createRange(); r.selectNode(document.getElementById("vault"));
-      var s=getSelection(); s.removeAllRanges(); s.addRange(r);
-      btn.textContent="Select+⌘C"; setTimeout(function(){btn.textContent="Copy";},1800);
-    });
+  var CFG={
+    RPC:"https://rpc.mainnet.chain.robinhood.com",
+    CHAIN_ID:4663, CHAIN_HEX:"0x1237",
+    EXPLORER:"https://robinhoodchain.blockscout.com",
+    POOLS:"https://pools.trade",
+    LAUNCHER:"0x00004c4ccc709Ef590F7C81102C0689F0263D4e9",
+    FACTORY:"0x000000e200088D55C39a11F609E5F667729ad49b",
+    STRATEGY:"0x544ef36801E90eE56bcd699Ed51A63CFCEaC8ec9",
+    BURN_VAULT:"0x39a750af34db27d8611b2836a31d301dfe366bfa"
+  };
+  var SUPPLY=1000000000n*(10n**18n);
+  var CFG_TAIL=[10000n,60n,198060n,-208980n,0n,0n];
+  var E=window.ethers;
+  var abi=E.AbiCoder.defaultAbiCoder();
+  var read=new E.JsonRpcProvider(CFG.RPC);
+  var iface=new E.Interface([
+    "function multicall(bytes[] data) returns (bytes[])",
+    "function createToken(address factory,string name,string symbol,uint8 decimals,uint128 initialSupply,address recipient,bytes tokenData) returns (address)",
+    "function distributeToken(address token,(address strategy,uint128 amount,bytes configData) distribution,bytes32 salt)"
+  ]);
+  var factory=new E.Contract(CFG.FACTORY,["function getUERC20Address(string name,string symbol,uint8 decimals,address creator,bytes32 graffiti) view returns (address)"],read);
+
+  var account=null;
+  var $=function(id){return document.getElementById(id)};
+
+  function pickEth(){
+    var e=window.ethereum; if(!e) return null;
+    if(e.providers&&e.providers.length){
+      return e.providers.find(function(p){return p.isMetaMask})||e.providers[0];
+    }
+    return e;
+  }
+  function short(a){return a.slice(0,6)+"…"+a.slice(-4)}
+
+  function encodeMetadata(m){
+    return abi.encode(["tuple(string description,string website,string image,bytes extraData)"],
+      [[m.description||"",m.website||"",m.image||"","0x"]]);
+  }
+  function encodeConfig(feeRecipient){
+    return abi.encode(["address","uint256","uint256","int256","int256","uint256","uint256"],
+      [feeRecipient].concat(CFG_TAIL));
+  }
+  function graffitiFor(creator){return E.keccak256(abi.encode(["address"],[creator]))}
+  function predictToken(name,symbol,creator){
+    return factory.getUERC20Address(name,symbol,18,CFG.LAUNCHER,graffitiFor(creator));
+  }
+  async function buildLaunch(o){
+    var token=await predictToken(o.name,o.symbol,o.creator);
+    var tokenData=encodeMetadata(o);
+    var createData=iface.encodeFunctionData("createToken",[CFG.FACTORY,o.name,o.symbol,18,SUPPLY,CFG.LAUNCHER,tokenData]);
+    var configData=encodeConfig(CFG.BURN_VAULT);
+    var salt=E.hexlify(E.randomBytes(32));
+    var distData=iface.encodeFunctionData("distributeToken",[token,[CFG.STRATEGY,SUPPLY,configData],salt]);
+    var data=iface.encodeFunctionData("multicall",[[createData,distData]]);
+    return {to:CFG.LAUNCHER,data:data,value:"0x0",token:token};
+  }
+
+  function vals(){
+    return {
+      name:$("name").value.trim(),
+      symbol:$("symbol").value.trim().toUpperCase(),
+      description:$("desc").value.trim(),
+      website:$("website").value.trim(),
+      image:$("image").value.trim()
+    };
+  }
+  function valid(v){return v.name.length>=1&&v.symbol.length>=1}
+
+  var lastPredict=0;
+  async function refreshPreview(){
+    var v=vals();
+    var pv=$("preview");
+    if(!v.name&&!v.symbol&&!v.image){pv.style.display="none";return}
+    pv.style.display="flex";
+    $("pn").textContent=v.name||"—";
+    $("pt").textContent=v.symbol?("$"+v.symbol):"—";
+    $("pimg").style.backgroundImage=v.image?("url('"+v.image+"')"):"";
+    var btn=$("launch");
+    if(account&&valid(v)){
+      btn.disabled=false; btn.textContent="Launch — dev fee burns 🔥";
+      var stamp=++lastPredict;
+      try{
+        var t=await predictToken(v.name,v.symbol,account);
+        if(stamp===lastPredict) $("paddrv").textContent=t;
+      }catch(e){ if(stamp===lastPredict) $("paddrv").textContent="—"; }
+    }else{
+      btn.disabled=true;
+      btn.textContent=account?"Enter a name and ticker":"Connect wallet to launch";
+      $("paddrv").textContent=account?"—":"connect wallet to preview";
+    }
+  }
+  ["name","symbol","desc","website","image"].forEach(function(id){
+    $(id).addEventListener("input",refreshPreview);
   });
+
+  function setStatus(kind,html){
+    var s=$("status"); s.className="status show "+kind;
+    s.querySelector(".body").innerHTML=html;
+  }
+  function steps(active){
+    var names=["Build launch transaction","Simulate on-chain (no spend)","Sign in your wallet","Confirm & go live"];
+    return '<ul class="steplist">'+names.map(function(n,i){
+      var c=i<active?"done":(i===active?"active":"");
+      return '<li class="'+c+'">'+n+'</li>';
+    }).join("")+'</ul>';
+  }
+
+  async function ensureChain(prov){
+    var cid=await prov.request({method:"eth_chainId"});
+    if(cid===CFG.CHAIN_HEX) return;
+    try{
+      await prov.request({method:"wallet_switchEthereumChain",params:[{chainId:CFG.CHAIN_HEX}]});
+    }catch(err){
+      if(err&&err.code===4902){
+        await prov.request({method:"wallet_addEthereumChain",params:[{
+          chainId:CFG.CHAIN_HEX,chainName:"Robinhood Chain",
+          nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
+          rpcUrls:[CFG.RPC],blockExplorerUrls:[CFG.EXPLORER]
+        }]});
+      }else{throw err;}
+    }
+  }
+
+  async function connect(){
+    var prov=pickEth();
+    if(!prov){setStatus("err","<div class='body'><h3>No wallet found</h3><p>Install MetaMask to launch from Everpool.</p></div>");return}
+    try{
+      var accs=await prov.request({method:"eth_requestAccounts"});
+      await ensureChain(prov);
+      account=accs[0];
+      var b=$("connect"); b.className="wbtn on"; b.textContent=short(account);
+      refreshPreview();
+    }catch(e){
+      setStatus("err","<div class='body'><h3>Couldn't connect</h3><p>"+(e.shortMessage||e.message||e)+"</p></div>");
+    }
+  }
+
+  async function launch(){
+    var v=vals();
+    if(!account||!valid(v)) return;
+    var prov=pickEth();
+    $("launch").disabled=true;
+    setStatus("info","<div class='body'><h3>Launching "+ (v.name||"token") +"…</h3>"+steps(0)+"</div>");
+    try{
+      await ensureChain(prov);
+      var built=await buildLaunch({name:v.name,symbol:v.symbol,description:v.description,website:v.website,image:v.image,creator:account});
+      // 1) simulate via eth_call — never let a user pay gas for a failing launch
+      setStatus("info","<div class='body'><h3>Launching "+v.name+"…</h3>"+steps(1)+"</div>");
+      await read.call({to:built.to,from:account,data:built.data});
+      // 2) sign
+      setStatus("info","<div class='body'><h3>Launching "+v.name+"…</h3><p>Approve the transaction in your wallet.</p>"+steps(2)+"</div>");
+      var hash=await prov.request({method:"eth_sendTransaction",params:[{from:account,to:built.to,data:built.data,value:"0x0"}]});
+      // 3) wait
+      setStatus("info","<div class='body'><h3>Launching "+v.name+"…</h3><p>Waiting for confirmation…</p><p><a href='"+CFG.EXPLORER+"/tx/"+hash+"' target='_blank' rel='noopener'>"+hash+"</a></p>"+steps(3)+"</div>");
+      await read.waitForTransaction(hash);
+      // done
+      setStatus("ok","<div class='body'><h3>🔥 "+v.name+" is live.</h3>"+
+        "<p>Your token launched with the dev fee burning forever.</p>"+
+        "<p><b>Contract:</b> <a href='"+CFG.EXPLORER+"/address/"+built.token+"' target='_blank' rel='noopener'>"+built.token+"</a></p>"+
+        "<p><a href='"+CFG.POOLS+"/"+built.token+"' target='_blank' rel='noopener'>Trade it on pools.trade ↗</a></p></div>");
+      $("launch").textContent="Launched ✓";
+    }catch(e){
+      var msg=e.shortMessage||e.message||String(e);
+      if(e&&e.code===4001) msg="You rejected the transaction.";
+      setStatus("err","<div class='body'><h3>Launch failed</h3><p>"+msg+"</p></div>");
+      $("launch").disabled=false;
+      refreshPreview();
+    }
+  }
+
+  $("connect").addEventListener("click",connect);
+  $("launch").addEventListener("click",launch);
+  if(window.ethereum&&window.ethereum.on){
+    window.ethereum.on("accountsChanged",function(a){account=a&&a[0]||null;
+      var b=$("connect");
+      if(account){b.className="wbtn on";b.textContent=short(account)}else{b.className="wbtn";b.textContent="Connect wallet"}
+      refreshPreview();});
+  }
 })();
 </script>
 
