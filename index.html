@@ -734,7 +734,9 @@ void main(){
   var statusEl = document.getElementById("lf-status");
   var noteEl = document.getElementById("lf-note");
   var goBtn = document.getElementById("lf-go");
-  var eth = window.ethereum;
+  var eth = (function(){ var e=window.ethereum; if(!e) return null;
+    if(e.providers && e.providers.length) return e.providers.find(function(p){return p && p.isMetaMask;}) || e.providers[0];
+    return e; })();
   var account = null;
 
   function openModal(){ modal.setAttribute("data-open","true"); }

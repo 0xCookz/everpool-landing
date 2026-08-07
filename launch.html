@@ -168,7 +168,11 @@ h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,6vw,42px);line-h
     launcher:   "0xb2e716736ae4af757c0b24aae7b2bd26dc910b08",
     launchedTopic: "0xa6f2b8981631a2b06092746b2d22a69bb8887f2dd9b28af5282d0d2bf87601a2"
   };
-  var eth = window.ethereum, account = null;
+  // Prefer MetaMask when several wallets (e.g. Phantom) inject a provider.
+  function pickEth(){ var e=window.ethereum; if(!e) return null;
+    if(e.providers && e.providers.length) return e.providers.find(function(p){return p && p.isMetaMask;}) || e.providers[0];
+    return e; }
+  var eth = pickEth(), account = null;
   var $=function(id){return document.getElementById(id);};
   var nameEl=$("lf-name"), symEl=$("lf-symbol"), goBtn=$("lf-go"), statusEl=$("lf-status");
 
